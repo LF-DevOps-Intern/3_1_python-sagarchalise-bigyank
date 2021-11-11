@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# exit when any command fails
+set -e
+
+
 function checkPip(){
     pip3 --version
 }
@@ -41,6 +45,7 @@ function checkSysRequirements(){
 
 
 function parseArgs(){
+    unset url
     ARGS=""
     
     VALID_ARGS=$(getopt -o u:,s --long url:,http_server -- "$@")
@@ -53,6 +58,7 @@ function parseArgs(){
         case "$1" in
             -u | --url)
                 ARGS="$ARGS $1 $2"
+                url=$1
                 shift 2
             ;;
             -s | --http_server)
@@ -64,7 +70,7 @@ function parseArgs(){
             ;;
         esac
     done
-    
+    : ${url:?Missing -h}
     echo $ARGS
 }
 
@@ -81,14 +87,21 @@ function runPythonScript(){
     python ./args.py $@
 }
 
-checkSysRequirements
-FLAGS=$(parseArgs $@)
-runPythonScript $FLAGS
+function cleanup(){
+    # cleanup
+    deactivate
+    rm -rf ./venv
+}
 
 
+function main(){
+    checkSysRequirements
+    FLAGS=$(parseArgs $@)
+    echo $FLAGS
+    runPythonScript $FLAGS
+    cleanup
+}
+
+main $@
 
 
-
-# cleanup
-deactivate
-rm -rf ./venv
