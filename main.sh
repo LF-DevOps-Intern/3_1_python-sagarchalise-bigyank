@@ -18,26 +18,16 @@ function checkVirtualEnv(){
 
 
 function checkSysRequirements(){
-    if checkPython3
+    if ! checkPython3
     then
-        :
-    else
         echo "python 3 is not installed on the system"
         sudo apt install python3
-    fi
-    
-    if checkPip
+    elif ! checkPip
     then
-        :
-    else
         echo "pip3 is not installed on the system"
         sudo apt-get -y install python3-pip
-    fi
-    
-    if checkVirtualEnv
+    elif ! checkVirtualEnv
     then
-        :
-    else
         echo "virtualenv is not installed"
         pip3 install virtualenv
     fi
@@ -70,7 +60,11 @@ function parseArgs(){
             ;;
         esac
     done
-    : ${url:?Missing -h}
+    
+    # exit if --url flag missing
+    : ${url:?Missing --url}
+    
+    # return
     echo $ARGS
 }
 
