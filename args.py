@@ -1,6 +1,10 @@
 import argparse
 import requests
 from pywebcopy import save_webpage
+import subprocess
+import os
+import sys
+from pathlib import Path
 
 
 
@@ -16,29 +20,48 @@ def verifyUrl(address):
     except requests.Timeout as time_out:
         raise SystemExit(time_out)
 
-    except request.HTTPError as generic_error:
+    except requests.HTTPError as generic_error:
         raise SystemExit(generic_error)
 
     except Exception as e:
         raise SystemExit(e)
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument('--url', type=str, required=True)
-parser.add_argument('--http_server', action='store_true')
-args = parser.parse_args()
 
 
-if args.http_server:
-  print(args.url, 'will be servered through web server')
-  url = args.url
-  verifyUrl(url)
-  download_folder = './'    
 
-  kwargs = {'bypass_robots': True, 'project_name': 'recognisable-name'}
+def main():
+    parser = argparse.ArgumentParser()
 
-  save_webpage(url, download_folder, **kwargs)
+    parser.add_argument('--url', type=str, required=True)
+    parser.add_argument('--http_server', action='store_true')
+    args = parser.parse_args()
 
-else:
-  print(args.url, 'file from this url will be downloaded')
 
+    if args.http_server:
+        print(args.url, 'will be servered through web server')
+        url = args.url
+        verifyUrl(url) 
+        download_folder = str(Path(__file__).parent.absolute())
+        download_folder_name = 'webcontents'
+        kwargs = {'bypass_robots': True, 'project_name': 'webcontents'}
+
+       
+        save_webpage(url, download_folder, **kwargs)
+        
+        subprocess.run(list(f'python3 -m http.server -d {download_folder_name} '.split()))
+
+    else:
+        print(args.url, 'file from this url will be downloaded')
+   
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Keyboard Interruption')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
+       
