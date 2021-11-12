@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 
-def verifyUrl(address):
+def verify_url(address):
     try:
         response = requests.get(address, timeout=5) 
     except requests.ConnectionError as connection_error:
@@ -27,13 +27,13 @@ def verifyUrl(address):
         raise SystemExit(e)
 
 
-def downloadContents(url, download_folder_name):
-    verifyUrl(url) 
+def download_contents(url, download_folder_name):
+    verify_url(url) 
     content_path = str(Path(__file__).parent.absolute())
     kwargs = {'bypass_robots': True, 'project_name': download_folder_name}
     save_webpage(url, content_path, **kwargs)
 
-def parseArgs():
+def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--url', type=str, required=True)
@@ -43,12 +43,12 @@ def parseArgs():
 
 def main():
     download_folder_name = 'webcontents'
-    args = parseArgs()
+    args = parse_args()
     if args.http_server:
-        downloadContents(args.url, download_folder_name)
+        download_contents(args.url, download_folder_name)
         subprocess.run(list(f'python3 -m http.server -d {download_folder_name} '.split()))
     else:
-        downloadContents(args.url, download_folder_name)
+        download_contents(args.url, download_folder_name)
    
 
 
