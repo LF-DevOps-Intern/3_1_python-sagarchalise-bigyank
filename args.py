@@ -27,7 +27,11 @@ def verifyUrl(address):
         raise SystemExit(e)
 
 
-
+def downloadContents(url):
+    verifyUrl(url) 
+    content_path = str(Path(__file__).parent.absolute())
+    kwargs = {'bypass_robots': True, 'project_name': 'webcontents'}
+    save_webpage(url, content_path, **kwargs)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,21 +41,13 @@ def main():
     args = parser.parse_args()
 
 
+    download_folder_name = 'webcontents'
+
     if args.http_server:
-        print(args.url, 'will be servered through web server')
-        url = args.url
-        verifyUrl(url) 
-        download_folder = str(Path(__file__).parent.absolute())
-        download_folder_name = 'webcontents'
-        kwargs = {'bypass_robots': True, 'project_name': 'webcontents'}
-
-       
-        save_webpage(url, download_folder, **kwargs)
-        
+        downloadContents(args.url)
         subprocess.run(list(f'python3 -m http.server -d {download_folder_name} '.split()))
-
     else:
-        print(args.url, 'file from this url will be downloaded')
+        downloadContents(args.url)
    
 
 
