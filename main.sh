@@ -3,6 +3,9 @@
 # exit when any command fails
 set -e
 
+# verbose log
+set -v
+
 
 function checkPip(){
     pip3 --version
@@ -96,6 +99,7 @@ function main(){
     cleanup
 }
 
-main $@
-
+{
+    main $@
+} 2>&1 | tee ./script.log
 
